@@ -7,13 +7,20 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * An instrument for creating {@link Function}s that can produce predetermined results due to certain input parameter
+ * conditions.
+ */
 public class Selector<T, R> {
 
     private final List<Entry<T, R>> cases = new LinkedList<>();
-    private final Successor successor = new Successor();
+    private final Implication implication = new Implication();
 
-    public final Case when(final Predicate<? super T> predicate) {
-        return new Case(predicate);
+    /**
+     * Returns a {@link Condition} from a given {@link Predicate} for an expected function parameter.
+     */
+    public final Condition when(final Predicate<? super T> predicate) {
+        return new Condition(predicate);
     }
 
     private static final class Result<T, R> implements Function<T, R> {
@@ -47,20 +54,38 @@ public class Selector<T, R> {
         }
     }
 
-    public final class Successor {
+    /**
+     * Defines an implication, as it is to be used in this context.
+     */
+    public final class Implication {
 
-        public final Case orWhen(final Predicate<? super T> predicate) {
-            return new Case(predicate);
+        /**
+         * Specifies and returns an alternative {@link Condition} from a given {@link Predicate} for an expected
+         * function parameter.
+         */
+        public final Condition orWhen(final Predicate<? super T> predicate) {
+            return new Condition(predicate);
         }
 
+        /**
+         * Terminating operation: Specifies a fallback result, completes and returns the resulting {@link Function}.
+         */
         public final Function<T, R> orElse(final R fallback) {
             return orElseGet(t -> fallback);
         }
 
+        /**
+         * Terminating operation: Specifies how to get a fallback result from an expected function parameter,
+         * completes and returns the resulting {@link Function}.
+         */
         public Function<T, R> orElseGet(final Function<T, R> fallback) {
             return new Result<>(cases, fallback);
         }
 
+        /**
+         * Terminating operation: Specifies how to get a {@link RuntimeException} when no result is available,
+         * completes and returns the resulting {@link Function}.
+         */
         public <X extends RuntimeException> Function<T, R> orElseThrow(final Function<T, X> newException) {
             return orElseGet(t -> {
                 throw newException.apply(t);
@@ -68,17 +93,23 @@ public class Selector<T, R> {
         }
     }
 
-    public final class Case {
+    /**
+     * Defines a condition, as it is to be used in this context.
+     */
+    public final class Condition {
 
         private final Predicate<? super T> predicate;
 
-        private Case(final Predicate<? super T> predicate) {
+        private Condition(final Predicate<? super T> predicate) {
             this.predicate = predicate;
         }
 
-        public final Selector<T, R>.Successor then(final R result) {
+        /**
+         * Defines and returns an {@link Implication} for this condition.
+         */
+        public final Implication then(final R result) {
             cases.add(new Entry<>(predicate, result));
-            return successor;
+            return implication;
         }
     }
 }
