@@ -33,7 +33,6 @@ public class SelectorTest {
                 .orWhen(Criterion.DEF::equals).then(Criterion.DEF)
                 .orWhen(Criterion.GHI::equals).then(Criterion.GHI)
                 .orWhen(Criterion.JKL::equals).then(Criterion.JKL)
-                .orWhen(Criterion.MNO::equals).then(Criterion.MNO)
                 .orElseGet(t -> t);
         for (final Criterion value : Criterion.values()) {
             assertEquals(value, selector.apply(value));
