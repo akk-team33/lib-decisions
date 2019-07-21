@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * An instrument for creating {@link Function}s that can produce predetermined results due to certain input parameter
+ * An instrument for creating {@link Function}s that produces predetermined results due to certain input parameter
  * conditions.
  */
 public class Selector<T, R> {
