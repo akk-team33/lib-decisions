@@ -2,7 +2,7 @@
 
 ## Requires
 
-    Java 8
+    Java 8 or higher
 
 ## pom.xml
 
@@ -12,4 +12,4 @@
       <version>8.0.0</version>
     </dependency>
 
-    Not available yet!
+    Not yet available on maven central!
