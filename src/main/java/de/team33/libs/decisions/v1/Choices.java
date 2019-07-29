@@ -44,7 +44,7 @@ public class Choices<T, R> {
 
         private Result(final List<Choice<T, R>> choices,
                        final Function<T, R> fallback) {
-            this.choices = Collections.unmodifiableList( new ArrayList<>(choices));
+            this.choices = Collections.unmodifiableList(new ArrayList<>(choices));
             this.fallback = fallback;
         }
 

@@ -1,11 +1,15 @@
 package de.team33.libs.decisions.v1;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+import static java.util.Collections.unmodifiableList;
 
 /**
  * An instrument for creating {@link Function}s that produces predetermined results due to certain input parameter
@@ -13,8 +17,24 @@ import java.util.function.Predicate;
  */
 public class Selector<T, R> {
 
-    private final List<Entry<T, R>> cases = new LinkedList<>();
-    private final Implication implication = new Implication();
+    private final List<Choice<T, R>> choices = new LinkedList<>();
+    private final Conclusion conclusion = new Conclusion();
+
+    public Selector() {
+    }
+
+    private Selector(final Stream<? extends Choice<T, R>> choices) {
+        choices.forEach(this.choices::add);
+    }
+
+    @SafeVarargs
+    public static <T, R> Selector<T, R>.Conclusion conclusion(final Choice<T, R> ... choices) {
+        return conclusion(Stream.of(choices));
+    }
+
+    public static <T, R> Selector<T, R>.Conclusion conclusion(final Stream<? extends Choice<T, R>> choices) {
+        return new Selector<>(choices).conclusion;
+    }
 
     /**
      * Returns a {@link Condition} from a given {@link Predicate} for an expected function parameter.
@@ -25,39 +45,28 @@ public class Selector<T, R> {
 
     private static final class Result<T, R> implements Function<T, R> {
 
-        private final List<Entry<T, R>> cases;
+        private final List<Choice<T, R>> choices;
         private final Function<T, R> fallback;
 
-        private Result(final List<Entry<T, R>> cases, final Function<T, R> fallback) {
-            this.cases = Collections.unmodifiableList(new ArrayList<>(cases));
+        private Result(final List<Choice<T, R>> choices, final Function<T, R> fallback) {
+            this.choices = unmodifiableList(new ArrayList<>(choices));
             this.fallback = fallback;
         }
 
         @Override
         public final R apply(final T t) {
-            return cases.stream()
-                    .filter(entry -> entry.filter.test(t))
+            return choices.stream()
+                    .filter(choice -> choice.condition.test(t))
                     .findFirst()
                     .map(entry -> entry.result)
                     .orElseGet(() -> fallback.apply(t));
         }
     }
 
-    private static final class Entry<T, R> {
-
-        private final Predicate<? super T> filter;
-        private final R result;
-
-        private Entry(final Predicate<? super T> filter, final R result) {
-            this.filter = filter;
-            this.result = result;
-        }
-    }
-
     /**
-     * Defines an implication, as it is to be used in this context.
+     * Defines a conclusion, as it is to be used in this context.
      */
-    public final class Implication {
+    public final class Conclusion {
 
         /**
          * Specifies and returns an alternative {@link Condition} from a given {@link Predicate} for an expected
@@ -79,7 +88,7 @@ public class Selector<T, R> {
          * completes and returns the resulting {@link Function}.
          */
         public Function<T, R> orElseGet(final Function<T, R> fallback) {
-            return new Result<>(cases, fallback);
+            return new Result<>(choices, fallback);
         }
 
         /**
@@ -105,11 +114,11 @@ public class Selector<T, R> {
         }
 
         /**
-         * Defines and returns an {@link Implication} for this condition.
+         * Defines and returns an {@link Conclusion} for this condition.
          */
-        public final Implication then(final R result) {
-            cases.add(new Entry<>(predicate, result));
-            return implication;
+        public final Conclusion then(final R result) {
+            choices.add(new Choice<>(predicate, result));
+            return conclusion;
         }
     }
 }

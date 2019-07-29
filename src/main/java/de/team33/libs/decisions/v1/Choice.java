@@ -4,10 +4,10 @@ import java.util.function.Predicate;
 
 public class Choice<T, R> {
 
-    final Predicate<T> condition;
+    final Predicate<? super T> condition;
     final R result;
 
-    public Choice(final Predicate<T> condition, final R result) {
+    public Choice(final Predicate<? super T> condition, final R result) {
         this.condition = condition;
         this.result = result;
     }

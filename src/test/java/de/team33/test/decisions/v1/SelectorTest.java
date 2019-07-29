@@ -1,9 +1,11 @@
 package de.team33.test.decisions.v1;
 
+import de.team33.libs.decisions.v1.Choice;
 import de.team33.libs.decisions.v1.Selector;
 import org.junit.Test;
 
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -13,10 +15,10 @@ public class SelectorTest {
 
     @Test
     public void whenOrWhenOrElse() {
-        final Function<Criterion, Criterion> selector = new Selector<Criterion, Criterion>()
-                .when(Criterion.ABC::equals).then(Criterion.ABC)
-                .orWhen(Criterion.DEF::equals).then(Criterion.DEF)
-                .orWhen(Criterion.GHI::equals).then(Criterion.GHI)
+        final Function<Criterion, Criterion> selector = Selector.<Criterion, Criterion>conclusion(
+                new Choice<>(Criterion.ABC::equals, Criterion.ABC),
+                new Choice<>(Criterion.DEF::equals, Criterion.DEF),
+                new Choice<>(Criterion.GHI::equals, Criterion.GHI))
                 .orWhen(Criterion.JKL::equals).then(Criterion.JKL)
                 .orWhen(Criterion.MNO::equals).then(Criterion.MNO)
                 .orElse(null);
@@ -28,11 +30,12 @@ public class SelectorTest {
 
     @Test
     public void whenOrWhenOrElseGet() {
-        final Function<Criterion, Criterion> selector = new Selector<Criterion, Criterion>()
-                .when(Criterion.ABC::equals).then(Criterion.ABC)
-                .orWhen(Criterion.DEF::equals).then(Criterion.DEF)
-                .orWhen(Criterion.GHI::equals).then(Criterion.GHI)
-                .orWhen(Criterion.JKL::equals).then(Criterion.JKL)
+        final Function<Criterion, Criterion> selector = Selector.<Criterion, Criterion>conclusion(Stream.of(
+                new Choice<>(Criterion.ABC::equals, Criterion.ABC),
+                new Choice<>(Criterion.DEF::equals, Criterion.DEF),
+                new Choice<>(Criterion.GHI::equals, Criterion.GHI)
+        ))
+                //.orWhen(Criterion.JKL::equals).then(Criterion.JKL)
                 .orElseGet(t -> t);
         for (final Criterion value : Criterion.values()) {
             assertEquals(value, selector.apply(value));
