@@ -16,8 +16,11 @@ import static java.util.Collections.unmodifiableList;
 public class Choices<T, R> {
 
     private final List<Choice<T, R>> choices = new LinkedList<>();
-    private final Conclusion conclusion = new Conclusion();
+    private final Stage stage = new Stage();
 
+    /**
+     * Initializes a new blank instance.
+     */
     public Choices() {
     }
 
@@ -26,22 +29,23 @@ public class Choices<T, R> {
     }
 
     /**
-     * Prepares a {@link Choices.Conclusion} and returns it.
+     * Prepares a new instance with several {@link Choice}s and returns its {@link Choices.Stage}.
      */
     @SafeVarargs
-    public static <T, R> Choices<T, R>.Conclusion prepare(final Choice<T, R>... choices) {
+    public static <T, R> Choices<T, R>.Stage prepare(final Choice<T, R>... choices) {
         return prepare(Stream.of(choices));
     }
 
     /**
-     * Prepares a {@link Choices.Conclusion} and returns it.
+     * Prepares a new instance with several {@link Choice}s and returns its {@link Choices.Stage}.
      */
-    public static <T, R> Choices<T, R>.Conclusion prepare(final Stream<? extends Choice<T, R>> choices) {
-        return new Choices<>(choices).conclusion;
+    public static <T, R> Choices<T, R>.Stage prepare(final Stream<? extends Choice<T, R>> choices) {
+        return new Choices<>(choices).stage;
     }
 
     /**
-     * Returns a {@link Condition} from a given {@link Predicate} for an expected function parameter.
+     * Creates and returns a first {@link Condition} on this {@link Choices} using a given {@link Predicate} for a
+     * designated function parameter.
      */
     public final Condition when(final Predicate<? super T> predicate) {
         return new Condition(predicate);
@@ -68,9 +72,9 @@ public class Choices<T, R> {
     }
 
     /**
-     * Defines a conclusion, as it is to be used in this context.
+     * Defines a stage, as it is to be used in this context.
      */
-    public final class Conclusion {
+    public final class Stage {
 
         /**
          * Specifies and returns an alternative {@link Condition} from a given {@link Predicate} for an expected
@@ -107,7 +111,7 @@ public class Choices<T, R> {
     }
 
     /**
-     * Defines a condition, as it is to be used in this context.
+     * Defines a condition as it is in this context.
      */
     public final class Condition {
 
@@ -118,11 +122,11 @@ public class Choices<T, R> {
         }
 
         /**
-         * Defines and returns an {@link Conclusion} for this condition.
+         * Adds a new {@link Choice} to the underlying {@link Choices} and returns its {@link Choices.Stage}.
          */
-        public final Conclusion then(final R result) {
+        public final Stage then(final R result) {
             choices.add(new Choice<>(predicate, result));
-            return conclusion;
+            return stage;
         }
     }
 }
