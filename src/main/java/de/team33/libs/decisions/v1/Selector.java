@@ -1,8 +1,6 @@
 package de.team33.libs.decisions.v1;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
@@ -27,12 +25,18 @@ public class Selector<T, R> {
         choices.forEach(this.choices::add);
     }
 
+    /**
+     * Prepares a {@link Selector.Conclusion} and returns it.
+     */
     @SafeVarargs
-    public static <T, R> Selector<T, R>.Conclusion conclusion(final Choice<T, R> ... choices) {
-        return conclusion(Stream.of(choices));
+    public static <T, R> Selector<T, R>.Conclusion prepare(final Choice<T, R>... choices) {
+        return prepare(Stream.of(choices));
     }
 
-    public static <T, R> Selector<T, R>.Conclusion conclusion(final Stream<? extends Choice<T, R>> choices) {
+    /**
+     * Prepares a {@link Selector.Conclusion} and returns it.
+     */
+    public static <T, R> Selector<T, R>.Conclusion prepare(final Stream<? extends Choice<T, R>> choices) {
         return new Selector<>(choices).conclusion;
     }
 

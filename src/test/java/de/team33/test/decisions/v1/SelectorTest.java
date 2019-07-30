@@ -15,7 +15,7 @@ public class SelectorTest {
 
     @Test
     public void whenOrWhenOrElse() {
-        final Function<Criterion, Criterion> selector = Selector.<Criterion, Criterion>conclusion(
+        final Function<Criterion, Criterion> selector = Selector.<Criterion, Criterion>prepare(
                 new Choice<>(Criterion.ABC::equals, Criterion.ABC),
                 new Choice<>(Criterion.DEF::equals, Criterion.DEF),
                 new Choice<>(Criterion.GHI::equals, Criterion.GHI))
@@ -30,7 +30,7 @@ public class SelectorTest {
 
     @Test
     public void whenOrWhenOrElseGet() {
-        final Function<Criterion, Criterion> selector = Selector.<Criterion, Criterion>conclusion(Stream.of(
+        final Function<Criterion, Criterion> selector = Selector.<Criterion, Criterion>prepare(Stream.of(
                 new Choice<>(Criterion.ABC::equals, Criterion.ABC),
                 new Choice<>(Criterion.DEF::equals, Criterion.DEF),
                 new Choice<>(Criterion.GHI::equals, Criterion.GHI)
