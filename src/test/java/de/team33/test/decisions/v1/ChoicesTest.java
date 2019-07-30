@@ -1,7 +1,7 @@
 package de.team33.test.decisions.v1;
 
 import de.team33.libs.decisions.v1.Choice;
-import de.team33.libs.decisions.v1.Selector;
+import de.team33.libs.decisions.v1.Choices;
 import org.junit.Test;
 
 import java.util.function.Function;
@@ -11,11 +11,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-public class SelectorTest {
+public class ChoicesTest {
 
     @Test
     public void whenOrWhenOrElse() {
-        final Function<Criterion, Criterion> selector = Selector.<Criterion, Criterion>prepare(
+        final Function<Criterion, Criterion> selector = Choices.<Criterion, Criterion>prepare(
                 new Choice<>(Criterion.ABC::equals, Criterion.ABC),
                 new Choice<>(Criterion.DEF::equals, Criterion.DEF),
                 new Choice<>(Criterion.GHI::equals, Criterion.GHI))
@@ -30,7 +30,7 @@ public class SelectorTest {
 
     @Test
     public void whenOrWhenOrElseGet() {
-        final Function<Criterion, Criterion> selector = Selector.<Criterion, Criterion>prepare(Stream.of(
+        final Function<Criterion, Criterion> selector = Choices.<Criterion, Criterion>prepare(Stream.of(
                 new Choice<>(Criterion.ABC::equals, Criterion.ABC),
                 new Choice<>(Criterion.DEF::equals, Criterion.DEF),
                 new Choice<>(Criterion.GHI::equals, Criterion.GHI)
@@ -45,7 +45,7 @@ public class SelectorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void orElseThrow() {
-        final Function<Criterion, String> selector = new Selector<Criterion, String>()
+        final Function<Criterion, String> selector = new Choices<Criterion, String>()
                 .when(Criterion.ABC::equals).then(Criterion.ABC.name())
                 .orWhen(Criterion.DEF::equals).then(Criterion.DEF.name())
                 .orWhen(Criterion.GHI::equals).then(Criterion.GHI.name())

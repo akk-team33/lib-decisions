@@ -13,31 +13,31 @@ import static java.util.Collections.unmodifiableList;
  * An instrument for creating {@link Function}s that produces predetermined results due to certain input parameter
  * conditions.
  */
-public class Selector<T, R> {
+public class Choices<T, R> {
 
     private final List<Choice<T, R>> choices = new LinkedList<>();
     private final Conclusion conclusion = new Conclusion();
 
-    public Selector() {
+    public Choices() {
     }
 
-    private Selector(final Stream<? extends Choice<T, R>> choices) {
+    private Choices(final Stream<? extends Choice<T, R>> choices) {
         choices.forEach(this.choices::add);
     }
 
     /**
-     * Prepares a {@link Selector.Conclusion} and returns it.
+     * Prepares a {@link Choices.Conclusion} and returns it.
      */
     @SafeVarargs
-    public static <T, R> Selector<T, R>.Conclusion prepare(final Choice<T, R>... choices) {
+    public static <T, R> Choices<T, R>.Conclusion prepare(final Choice<T, R>... choices) {
         return prepare(Stream.of(choices));
     }
 
     /**
-     * Prepares a {@link Selector.Conclusion} and returns it.
+     * Prepares a {@link Choices.Conclusion} and returns it.
      */
-    public static <T, R> Selector<T, R>.Conclusion prepare(final Stream<? extends Choice<T, R>> choices) {
-        return new Selector<>(choices).conclusion;
+    public static <T, R> Choices<T, R>.Conclusion prepare(final Stream<? extends Choice<T, R>> choices) {
+        return new Choices<>(choices).conclusion;
     }
 
     /**
